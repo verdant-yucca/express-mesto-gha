@@ -5,7 +5,7 @@ const {
   ERROR_CODE_INTERNAL_SERVER,
   ERROR_TEXT_INTERNAL_SERVER,
   ERROR_TEXT_NOT_FOUND_USERS,
-  ERROR_TEXT_BED_REQUEST
+  ERROR_TEXT_BED_REQUEST,
 } = require('../utils/constants');
 
 module.exports.createUser = (req, res) => {
@@ -32,7 +32,7 @@ module.exports.updateUser = (req, res) => {
     { name, about },
     {
       new: true,
-      runValidators: true
+      runValidators: true,
     },
   )
     .then((user) => {
@@ -66,7 +66,7 @@ module.exports.updateAvatar = (req, res) => {
     { avatar },
     {
       new: true,
-      runValidators: true
+      runValidators: true,
     },
   )
     .then((user) => {

@@ -5,7 +5,7 @@ const {
   ERROR_CODE_INTERNAL_SERVER,
   ERROR_TEXT_INTERNAL_SERVER,
   ERROR_TEXT_NOT_FOUND_CARDS,
-  ERROR_TEXT_BED_REQUEST
+  ERROR_TEXT_BED_REQUEST,
 } = require('../utils/constants');
 
 module.exports.createCard = (req, res) => {
