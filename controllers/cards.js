@@ -12,11 +12,7 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
-      if (card) {
-        res.status(200).send({ data: card });
-      } else {
-        res.status(ERROR_CODE_NOT_FOUND).send(ERROR_TEXT_NOT_FOUND_CARDS);
-      }
+      res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -29,8 +25,6 @@ module.exports.createCard = (req, res) => {
 
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .populate('owner')
-    .populate('likes')
     .then((cards) => res.send(cards))
     .catch(() => res.status(ERROR_CODE_INTERNAL_SERVER).send(ERROR_TEXT_INTERNAL_SERVER));
 };
@@ -41,8 +35,6 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .populate('owner')
-    .populate('likes')
     .then((card) => {
       if (card) {
         res.status(200).send({ data: card });
@@ -69,8 +61,6 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .populate('owner')
-    .populate('likes')
     .then((card) => {
       if (card) {
         res.status(200).send({ data: card });

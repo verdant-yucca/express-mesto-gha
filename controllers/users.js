@@ -23,10 +23,6 @@ module.exports.createUser = (req, res) => {
 
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
-  if (!(about || name)) {
-    res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
-    return;
-  }
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
@@ -43,11 +39,7 @@ module.exports.updateUser = (req, res) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
-        return;
-      }
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
         return;
       }
@@ -57,10 +49,6 @@ module.exports.updateUser = (req, res) => {
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  if (!avatar) {
-    res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
-    return;
-  }
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
@@ -77,11 +65,7 @@ module.exports.updateAvatar = (req, res) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
-        return;
-      }
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
         return;
       }
