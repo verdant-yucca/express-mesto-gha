@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     maxlength: 30,
-    default: 'Исследователь мирового океана',
+    default: 'Исследователь',
   },
   avatar: {
     type: String,
@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     validate: {
-      validator: (e) => isEmail(e),
+      validator: (v) => isEmail(v),
       message: 'Некорректная почта',
     },
   },
