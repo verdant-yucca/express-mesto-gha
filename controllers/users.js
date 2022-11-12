@@ -9,6 +9,7 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 const {
   ERROR_TEXT_NOT_FOUND_USERS,
   ERROR_TEXT_BED_REQUEST,
+  secretKey,
 } = require('../utils/constants');
 
 module.exports.createUser = (req, res, next) => {
@@ -130,7 +131,7 @@ module.exports.login = (req, res, next) => {
   }
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'salt-salt-salt', { expiresIn: '1d' });
+      const token = jwt.sign({ _id: user._id }, secretKey, { expiresIn: '1d' });
       res.send({ token });
     })
     .catch(() => next(new UnauthorizedError('Неправильная почта или пароль')));
