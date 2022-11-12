@@ -104,7 +104,7 @@ module.exports.getUsers = (req, res, next) => {
         throw new NotFoundError(ERROR_TEXT_NOT_FOUND_USERS.message);
       }
     })
-    .catch(next());
+    .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -146,5 +146,5 @@ module.exports.getMe = (req, res, next) => {
         throw new NotFoundError(ERROR_TEXT_NOT_FOUND_USERS.message);
       }
     })
-    .catch(next());
+    .catch(next);
 };
