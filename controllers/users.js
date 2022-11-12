@@ -16,15 +16,12 @@ module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if ((!email) || (!password)) {
-    throw new BadRequestError(ERROR_TEXT_BED_REQUEST.message);
-  }
   bcrypt.hash(password, 10)
     .then((hash) => {
       User.create({
         name, about, avatar, email, password: hash,
       })
-        .then((user) => res.status(200).send({
+        .then((user) => res.send({
           user: {
             name: user.name,
             about: user.about,
@@ -36,13 +33,14 @@ module.exports.createUser = (req, res, next) => {
         .catch((err) => {
           if (err.name === 'ValidationError') {
             next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
-          }
-          if (err.code === 11000) {
+          } else if (err.code === 11000) {
             next(new ConflictError('Пользователь с данным email уже существует'));
+          } else {
+            next(err);
           }
-          next(err);
         });
-    });
+    })
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -64,9 +62,10 @@ module.exports.updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new NotFoundError(ERROR_TEXT_BED_REQUEST.message);
+        next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -90,20 +89,15 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => {
-      if (users) {
-        res.send(users);
-      } else {
-        throw new NotFoundError(ERROR_TEXT_NOT_FOUND_USERS.message);
-      }
-    })
+    .then((users) => res.send(users))
     .catch(next);
 };
 
@@ -119,16 +113,14 @@ module.exports.getUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  if ((!email) || (!password)) {
-    throw new BadRequestError(ERROR_TEXT_BED_REQUEST.message);
-  }
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, secretKey, { expiresIn: '1d' });
@@ -141,7 +133,7 @@ module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (user) {
-        res.status(200).send(user);
+        res.send(user);
       } else {
         throw new NotFoundError(ERROR_TEXT_NOT_FOUND_USERS.message);
       }

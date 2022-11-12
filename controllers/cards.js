@@ -10,25 +10,20 @@ const {
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.status(200).send({ data: card }))
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => {
-      if (cards) {
-        res.send(cards);
-      } else {
-        throw new NotFoundError(ERROR_TEXT_NOT_FOUND_CARDS.message);
-      }
-    })
-    .catch((err) => next(err));
+    .then((cards) => res.send(cards))
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -39,17 +34,17 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (card) {
-        res.status(200).send({ data: card });
+        res.send({ data: card });
       } else {
         throw new NotFoundError(ERROR_TEXT_BED_REQUEST.message);
       }
     })
     .catch((err) => {
-      console.log(err.name);
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -61,7 +56,7 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (card) {
-        res.status(200).send({ data: card });
+        res.send({ data: card });
       } else {
         throw new NotFoundError(ERROR_TEXT_NOT_FOUND_CARDS.message);
       }
@@ -69,8 +64,9 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -81,7 +77,7 @@ module.exports.deleteCard = (req, res, next) => {
         if (card.owner.equals(req.user._id)) {
           return Card.findByIdAndRemove(req.params.cardId)
             .then(() => {
-              res.status(200).send({ data: card });
+              res.send({ data: card });
             });
         }
         throw new ForbiddenError('Нельзя удалять чужие карточки');
@@ -92,7 +88,8 @@ module.exports.deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
