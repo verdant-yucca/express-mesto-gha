@@ -1,20 +1,34 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
-const { ERROR_CODE_NOT_FOUND } = require('./utils/constants');
+const usersRouter = require('./routes/users');
+const cardsRouter = require('./routes/cards');
+const { login, createUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/NotFoundError');
+const centralizedError = require('./middlewares/centralizedError');
+
+const { createUserValidation, loginValidation } = require('./middlewares/validatons');
 
 const { PORT = 3000 } = process.env;
 const app = express();
-mongoose.connect('mongodb://localhost:27017/mestodb');
 
+mongoose.connect('mongodb://localhost:27017/mestodb'); // localhost || 127.0.0.1
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  req.user = { _id: '63611d4683e112403764b6b4' };
-  next();
-});
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
 
-app.use('/*', (req, res) => res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Страница не существует' }));
+app.post('/signin', loginValidation, login);
+app.post('/signup', createUserValidation, createUser);
+
+app.use(auth);
+app.use(cardsRouter);
+app.use(usersRouter);
+app.use('/*', () => {
+  throw new NotFoundError('Страница по указанному маршруту не найдена');
+});
+
+app.use(errors());
+app.use(centralizedError);
+
 app.listen(PORT, () => console.log(`App listening on port ${PORT}`));

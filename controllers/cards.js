@@ -1,35 +1,37 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/NotFoundError');
+const BadRequestError = require('../errors/BadRequestError');
+const ForbiddenError = require('../errors/ForbiddenError');
 const {
-  ERROR_CODE_BED_REQUEST,
-  ERROR_CODE_NOT_FOUND,
-  ERROR_CODE_INTERNAL_SERVER,
-  ERROR_TEXT_INTERNAL_SERVER,
-  ERROR_TEXT_NOT_FOUND_CARDS,
   ERROR_TEXT_BED_REQUEST,
+  ERROR_TEXT_NOT_FOUND_CARDS,
 } = require('../utils/constants');
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => {
-      res.status(200).send({ data: card });
-    })
+    .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
-        return;
+        next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
       }
-      res.status(ERROR_CODE_INTERNAL_SERVER).send(ERROR_TEXT_INTERNAL_SERVER);
+      next(err);
     });
 };
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send(cards))
-    .catch(() => res.status(ERROR_CODE_INTERNAL_SERVER).send(ERROR_TEXT_INTERNAL_SERVER));
+    .then((cards) => {
+      if (cards) {
+        res.send(cards);
+      } else {
+        throw new NotFoundError(ERROR_TEXT_NOT_FOUND_CARDS.message);
+      }
+    })
+    .catch((err) => next(err));
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -39,23 +41,19 @@ module.exports.likeCard = (req, res) => {
       if (card) {
         res.status(200).send({ data: card });
       } else {
-        res.status(ERROR_CODE_NOT_FOUND).send(ERROR_TEXT_NOT_FOUND_CARDS);
+        throw new NotFoundError(ERROR_TEXT_BED_REQUEST.message);
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
-        return;
+      console.log(err.name);
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
       }
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
-        return;
-      }
-      res.status(ERROR_CODE_INTERNAL_SERVER).send(ERROR_TEXT_INTERNAL_SERVER);
+      next(err);
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -65,36 +63,36 @@ module.exports.dislikeCard = (req, res) => {
       if (card) {
         res.status(200).send({ data: card });
       } else {
-        res.status(ERROR_CODE_NOT_FOUND).send(ERROR_TEXT_NOT_FOUND_CARDS);
+        throw new NotFoundError(ERROR_TEXT_NOT_FOUND_CARDS.message);
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
-        return;
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
       }
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
-        return;
-      }
-      res.status(ERROR_CODE_INTERNAL_SERVER).send(ERROR_TEXT_INTERNAL_SERVER);
+      next(err);
     });
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (card) {
-        res.status(200).send({ data: card });
+        if (card.owner.equals(req.user._id)) {
+          return Card.findByIdAndRemove(req.params.cardId)
+            .then(() => {
+              res.status(200).send({ data: card });
+            });
+        }
+        throw new ForbiddenError('Нельзя удалять чужие карточки');
       } else {
-        res.status(ERROR_CODE_NOT_FOUND).send(ERROR_TEXT_NOT_FOUND_CARDS);
+        throw new NotFoundError(ERROR_TEXT_NOT_FOUND_CARDS.message);
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE_BED_REQUEST).send(ERROR_TEXT_BED_REQUEST);
-        return;
+        next(new BadRequestError(ERROR_TEXT_BED_REQUEST.message));
       }
-      res.status(ERROR_CODE_INTERNAL_SERVER).send(ERROR_TEXT_INTERNAL_SERVER);
+      next(err);
     });
 };
