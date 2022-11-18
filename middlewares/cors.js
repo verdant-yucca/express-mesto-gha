@@ -1,7 +1,7 @@
 const allowedCors = [
   'https://verdant-yucca-front.nomoredomains.icu',
   'http://verdant-yucca-front.nomoredomains.icu',
-  'localhost:3000'
+  'localhost:3000',
 ];
 
 module.exports = (req, res, next) => {
@@ -15,10 +15,10 @@ module.exports = (req, res, next) => {
     res.header('Access-Control-Allow-Credentials', true);
   }
 
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
-    res.header('Access-Control-Allow-Headers', requestHeaders);
-    return res.end();
-  }
+  // if (req.method === 'OPTIONS') {
+  //   res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
+  //   res.header('Access-Control-Allow-Headers', requestHeaders);
+  //   return res.end();
+  // }
   return next();
 };
