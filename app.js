@@ -12,16 +12,12 @@ const router = require('./routes/routes');
 const { PORT = 3000 } = process.env;
 const app = express();
 
-const corsOptions = {
-  origin: 'https://verdant-yucca-front.nomoredomains.icu',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
-
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb'); // localhost || 127.0.0.1
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
-app.use(cors(corsOptions));
+
+app.use(cors());
 
 app.use(router);
 
