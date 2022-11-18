@@ -20,7 +20,7 @@ app.use(cors);
 
 app.use(router);
 
-app.use(errorLogger);
+// app.use(errorLogger);
 app.use(errors());
 app.use(centralizedError);
 

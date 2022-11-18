@@ -12,12 +12,12 @@ router.get('/crash-test', () => {
   }, 0);
 });
 
-router.post('/signin', loginValidation, login);
+// router.post('/signin', loginValidation, login);
 router.post('/signup', createUserValidation, createUser);
 
 router.use(auth);
-router.use(cardsRouter);
-router.use(usersRouter);
+// router.use(cardsRouter);
+// router.use(usersRouter);
 router.use('/*', () => {
   throw new NotFoundError('Страница по указанному маршруту не найдена');
 });
