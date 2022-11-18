@@ -8,8 +8,11 @@ const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
 const centralizedError = require('./middlewares/centralizedError');
-const { allowedCors } = require('../utils/constants');
-
+const allowedCors = [
+  'https://verdant-yucca-front.nomoredomains.icu',
+  'http://verdant-yucca-front.nomoredomains.icu',
+  'localhost:3000'
+];
 const { createUserValidation, loginValidation } = require('./middlewares/validatons');
 
 const { PORT = 3000 } = process.env;
@@ -18,10 +21,11 @@ const app = express();
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb'); // localhost || 127.0.0.1
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use((req, res, next) => {
   const { origin } = req.headers;
   const { method } = req;
-  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PUTCH,POST,DELETE';
+  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
   const requestHeaders = req.headers['access-control-request-headers'];
 
   if (allowedCors.includes(origin)) {
@@ -31,6 +35,7 @@ app.use((req, res, next) => {
   if (method === 'OPTIONS') {
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
     res.header('Access-Control-Allow-Headers', requestHeaders);
+    res.end();
   }
   return next()
 })
