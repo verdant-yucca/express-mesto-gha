@@ -14,7 +14,7 @@ const {
 } = require('../utils/constants');
 
 module.exports.createUser = (req, res, next) => {
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -46,7 +46,7 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.updateUser = (req, res, next) => {
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -73,7 +73,7 @@ module.exports.updateUser = (req, res, next) => {
 };
 
 module.exports.updateAvatar = (req, res, next) => {
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -100,14 +100,14 @@ module.exports.updateAvatar = (req, res, next) => {
 };
 
 module.exports.getUsers = (req, res, next) => {
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   User.find({})
     .then((users) => res.send(users))
     .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   User.findById(req.params.userId)
     .then((user) => {
       if (user) {
@@ -126,7 +126,7 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.login = (req, res, next) => {
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -137,7 +137,7 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.getMe = (req, res, next) => {
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   User.findById(req.user._id)
     .then((user) => {
       if (user) {

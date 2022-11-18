@@ -4,7 +4,7 @@ const allowedCors = [
   'localhost:3000'
 ];
 
-module.exports.setHeaderOrigin = req => {
+module.exports.setHeaderOrigin = req, res => {
   const { origin } = req.headers;
   if (allowedCors.includes(origin)) {
     return res.header('Access-Control-Allow-Origin', origin);

@@ -10,7 +10,7 @@ const {
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
@@ -23,14 +23,14 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.getCards = (req, res, next) => {
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   Card.find({})
     .then((cards) => res.send(cards))
     .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => {
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -53,7 +53,7 @@ module.exports.likeCard = (req, res, next) => {
 };
 
 module.exports.dislikeCard = (req, res, next) => {
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -76,7 +76,7 @@ module.exports.dislikeCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  setHeaderOrigin(req);
+  setHeaderOrigin(req, res);
   Card.findById(req.params.cardId)
     .then((card) => {
       if (card) {
