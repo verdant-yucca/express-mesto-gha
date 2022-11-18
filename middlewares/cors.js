@@ -3,18 +3,25 @@ const allowedCors = [
   'http://verdant-yucca-front.nomoredomains.icu',
   'localhost:3000',
 ];
+console.log('1');
 
 module.exports = (req, res, next) => {
+  console.log('2');
+
   const { origin } = req.headers;
   const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
   const requestHeaders = req.headers['access-control-request-headers'];
 
   if (allowedCors.includes(origin)) {
+    console.log('3');
+
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', true);
   }
 
   if (req.method === 'OPTIONS') {
+    console.log('4');
+
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
     res.header('Access-Control-Allow-Headers', requestHeaders);
     return res.end();
