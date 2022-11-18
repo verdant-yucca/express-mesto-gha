@@ -102,10 +102,6 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  const { origin } = req.headers;
-  if (allowedCors.includes(origin)) {
-    return res.header('Access-Control-Allow-Origin', origin);
-  }
   User.findById(req.params.userId)
     .then((user) => {
       if (user) {
