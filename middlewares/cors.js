@@ -1,6 +1,7 @@
 const allowedCors = [
   'https://verdant-yucca-front.nomoredomains.icu',
   'http://verdant-yucca-front.nomoredomains.icu',
+  'https://verdant-yucca-front.nomoredomains.icu/sign-up',
   'localhost:3000',
 ];
 console.log('1');
