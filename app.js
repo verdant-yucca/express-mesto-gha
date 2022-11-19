@@ -3,8 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
-// const cors = require('./middlewares/cors');
-const cors = require('cors');
+const cors = require('./middlewares/cors');
+// const cors = require('cors');
 const centralizedError = require('./middlewares/centralizedError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const router = require('./routes/routes');
@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
 
-app.use(cors());
+app.use(cors();
 
 app.use(router);
 

@@ -1,5 +1,5 @@
 {
-  "name": "backend-mesto-express",
+  "name": "express-mesto-gha",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
@@ -9,13 +9,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/verdant-yucca/react-mesto-api-full/backend.git"
+    "url": "git+https://github.com/verdant-yucca/express-mesto-gha.git"
   },
   "keywords": [],
   "author": "Roman Davydenko Deadshot323rd@yandex.ru",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/verdant-yucca/react-mesto-api-full/issues"
+    "url": "https://github.com/verdant-yucca/express-mesto-gha/issues"
   },
   "devDependencies": {
     "eslint": "^8.16.0",
@@ -23,7 +23,7 @@
     "eslint-plugin-import": "^2.26.0",
     "nodemon": "^2.0.16"
   },
-  "homepage": "https://github.com/verdant-yucca/react-mesto-api-full#readme",
+  "homepage": "https://github.com/verdant-yucca/express-mesto-gha",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.1",
